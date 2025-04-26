@@ -1,0 +1,1002 @@
+openapi: 3.0.0
+info:
+  title: NEM NIS API
+  version: 1.22.0
+  description: |-
+    NEM NIS API Documentation
+    Version 1.22
+    15:37, January 15, 2018
+    Based on: https://nemproject.github.io/
+tags:
+  - name: nis-status
+  - name: account
+  - name: block-chain
+  - name: node
+  - name: namespaces-and-mosaics
+  - name: debug
+  - name: initiating-transactions
+paths:
+  /account/generate:
+    get:
+      operationId: generateAccount
+      summary: Retrieving account data
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.KeyPairViewModel'
+      tags:
+        - account
+  /account/get:
+    get:
+      operationId: getAccountInfo
+      summary: Requesting the account data
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AccountMetaDataPair'
+      tags:
+        - account
+  /account/get/forwarded:
+    get:
+      operationId: getAccountInfoForwarded
+      summary: Requesting the original account data for a delegate account
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AccountMetaDataPair'
+      tags:
+        - account
+  /account/get/forwarded/from-public-key:
+    get:
+      operationId: getAccountInfoForwardedFromPublicKey
+      summary: Requesting the original account data for a delegate account (Public key)
+      parameters:
+        - name: publicKey
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AccountMetaDataPair'
+      tags:
+        - account
+  /account/get/from-public-key:
+    get:
+      operationId: getAccountInfoFromPublicKey
+      summary: Requesting the account data (public key)
+      parameters:
+        - name: publicKey
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AccountMetaDataPair'
+      tags:
+        - account
+  /account/harvests:
+    get:
+      operationId: getAccountHarvests
+      summary: Requesting harvest info data for an account
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: hash
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TransactionMetaDataPair'
+      tags:
+        - account
+  /account/historical/get:
+    get:
+      operationId: getAccountHistoricalData
+      summary: Retrieving historical account data
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: startHeight
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: endHeight
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: increment
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.AccountHistoricalDataViewModel'
+      tags:
+        - account
+  /account/importances:
+    get:
+      operationId: getAccountImportances
+      summary: Retrieving account importances for accounts
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.AccountImportanceViewModel'
+      tags:
+        - account
+  /account/lock:
+    post:
+      operationId: lockAccount
+      summary: Locking the account (stops harvesting)
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemRequestResult'
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                privateKey:
+                  type: string
+              required: []
+  /account/mosaic/definition/page:
+    get:
+      operationId: getAccountMosaicDefinitions
+      summary: Retrieving mosaic definitions that an account has created
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: parent
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.MosaicDefinitionMetaDataPair'
+      tags:
+        - account
+  /account/mosaic/owned:
+    get:
+      operationId: getAccountOwnedMosaics
+      summary: Retrieving mosaics that an account owns
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.Mosaic'
+      tags:
+        - account
+  /account/namespace/page:
+    get:
+      operationId: getAccountNamespaces
+      summary: Retrieving namespaces that an account owns
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: parent
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.NamespaceMetaDataPair'
+      tags:
+        - account
+  /account/status:
+    get:
+      operationId: getAccountStatus
+      summary: Requesting the account status
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AccountMetaData'
+      tags:
+        - account
+  /account/transfers/all:
+    get:
+      operationId: getAccountAllTransfers
+      summary: Requesting transaction data for an account (All)
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: hash
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TransactionMetaDataPair'
+      tags:
+        - account
+  /account/transfers/incoming:
+    get:
+      operationId: getAccountIncomingTransfers
+      summary: Requesting transaction data for an account (Incoming)
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: hash
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TransactionMetaDataPair'
+      tags:
+        - account
+  /account/transfers/outgoing:
+    get:
+      operationId: getAccountOutgoingTransfers
+      summary: Requesting transaction data for an account (Outgoing)
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: hash
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+      tags:
+        - account
+  /account/unconfirmedTransactions:
+    get:
+      operationId: getAccountUnconfirmedTransactions
+      summary: Unconfirmed transactions
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.UnconfirmedTransactionMetaDataPair'
+      tags:
+        - account
+  /account/unlock:
+    post:
+      operationId: unlockAccount
+      summary: Unlocking the account (enables harvesting)
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemRequestResult'
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                privateKey:
+                  type: string
+              required: []
+  /account/unlocked/info:
+    post:
+      operationId: getAccountUnlockInfo
+      summary: Retrieving the unlock info
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemRequestResult'
+      tags:
+        - account
+  /block/at/public:
+    post:
+      operationId: getBlockAtHeight
+      summary: Getting a block with a given height
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.Block'
+      tags:
+        - block-chain
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                blockHeight:
+                  type: string
+              required: []
+  /block/get:
+    get:
+      operationId: getBlockByHash
+      summary: Getting a block with a given hash
+      parameters:
+        - name: blockHash
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.Block'
+      tags:
+        - block-chain
+  /chain/height:
+    get:
+      operationId: getChainHeight
+      summary: Block chain height
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.BlockHeight'
+      tags:
+        - block-chain
+  /chain/last-block:
+    get:
+      operationId: getChainLastBlock
+      summary: Last block of the block chain score
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.Block'
+      tags:
+        - block-chain
+  /chain/score:
+    get:
+      operationId: getChainScore
+      summary: Block chain score
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.BlockChainScore'
+      tags:
+        - block-chain
+  /debug/connections/incoming:
+    get:
+      operationId: getDebugIncomingConnections
+      summary: Monitoring incoming calls
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AuditCollection'
+      tags:
+        - debug
+  /debug/connections/outgoing:
+    get:
+      operationId: getDebugOutgoingConnections
+      summary: Monitoring outgoing calls
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.AuditCollection'
+      tags:
+        - debug
+  /debug/time-synchronization:
+    get:
+      operationId: getDebugTimeSynchronization
+      summary: Monitoring the network time
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TimeSynchronizationResult'
+      tags:
+        - debug
+  /debug/timers:
+    get:
+      operationId: getDebugTimers
+      summary: Monitoring timers
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.NemAsyncTimerVisitor'
+      tags:
+        - debug
+  /heartbeat:
+    get:
+      operationId: getHeartbeat
+      summary: Heart beat
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemRequestResult'
+      tags:
+        - nis-status
+  /local/account/transfers/all:
+    post:
+      operationId: getDecodedAllTransfers
+      summary: All transactions with decoded messages
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TransactionMetaDataPair'
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: string
+              required: []
+  /local/account/transfers/incoming:
+    post:
+      operationId: getDecodedIncomingTransfers
+      summary: Incoming transactions with decoded messages
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TransactionMetaDataPair'
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: string
+              required: []
+  /local/account/transfers/outgoing:
+    post:
+      operationId: getDecodedOutgoingTransfers
+      summary: Outgoing transactions with decoded messages
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.TransactionMetaDataPair'
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: string
+              required: []
+  /local/chain/blocks-after:
+    post:
+      operationId: getBlocksAfterHeight
+      summary: Getting part of a chain
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.ExplorerBlockViewModel'
+      tags:
+        - block-chain
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                blockHeight:
+                  type: string
+              required: []
+  /namespace:
+    get:
+      operationId: getNamespace
+      summary: Retrieving a specific namespace
+      parameters:
+        - name: namespace
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.Namespace'
+      tags:
+        - namespaces-and-mosaics
+  /namespace/mosaic/definition/page:
+    get:
+      operationId: getNamespaceMosaicDefinitions
+      summary: Retrieving mosaic definitions
+      parameters:
+        - name: namespace
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.MosaicDefinitionMetaDataPair'
+      tags:
+        - namespaces-and-mosaics
+  /namespace/roots:
+    get:
+      operationId: getNamespaceRoots
+      summary: Retrieving root namespaces
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.NamespaceMetaDataPair'
+      tags:
+        - namespaces-and-mosaics
+  /node/active-peers/max-chain-height:
+    get:
+      operationId: getActivePeersMaxChainHeight
+      summary: Maximum chain height in the active neighborhood
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.BlockHeight'
+      tags:
+        - node
+  /node/boot:
+    post:
+      operationId: bootLocalNode
+      summary: Booting the local node
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemRequestResult'
+      tags:
+        - node
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bootNodeRequest:
+                  type: string
+              required: []
+  /node/experiences:
+    get:
+      operationId: getNodeExperiences
+      summary: Requesting node experiences
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Models.ExtendedNodeExperiencePair'
+      tags:
+        - node
+  /node/extended-info:
+    get:
+      operationId: getNodeExtendedInfo
+      summary: Extended node information
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NisNodeInfo'
+      tags:
+        - node
+  /node/info:
+    get:
+      operationId: getNodeInfo
+      summary: Basic node information
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.Node'
+      tags:
+        - node
+  /node/peer-list/active:
+    get:
+      operationId: getActiveNodePeers
+      summary: Active neighborhood
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NodeCollection'
+      tags:
+        - node
+  /node/peer-list/all:
+    get:
+      operationId: getAllNodePeers
+      summary: Complete neighborhood
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NodeCollection'
+      tags:
+        - node
+  /node/peer-list/reachable:
+    get:
+      operationId: getReachableNodePeers
+      summary: Reachable neighborhood
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NodeCollection'
+      tags:
+        - node
+  /status:
+    get:
+      operationId: getStatus
+      summary: Status
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemRequestResult'
+      tags:
+        - nis-status
+  /transaction/announce:
+    post:
+      operationId: announceTransaction
+      summary: Sending the data to NIS
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemAnnounceResult'
+      tags:
+        - initiating-transactions
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                requestAnnounce:
+                  type: string
+              required: []
+  /transaction/prepare-announce:
+    post:
+      operationId: prepareTransactionAnnounce
+      summary: Initiating a transaction
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models.NemAnnounceResult'
+      tags:
+        - initiating-transactions
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                requestPrepareAnnounce:
+                  type: string
+              required: []
+components:
+  schemas:
+    Models.AccountHistoricalDataViewModel:
+      type: object
+    Models.AccountImportanceViewModel:
+      type: object
+    Models.AccountMetaData:
+      type: object
+    Models.AccountMetaDataPair:
+      type: object
+    Models.AuditCollection:
+      type: object
+    Models.Block:
+      type: object
+    Models.BlockChainScore:
+      type: object
+    Models.BlockHeight:
+      type: object
+    Models.ExplorerBlockViewModel:
+      type: object
+    Models.ExtendedNodeExperiencePair:
+      type: object
+    Models.KeyPairViewModel:
+      type: object
+    Models.Mosaic:
+      type: object
+    Models.MosaicDefinitionMetaDataPair:
+      type: object
+    Models.Namespace:
+      type: object
+    Models.NamespaceMetaDataPair:
+      type: object
+    Models.NemAnnounceResult:
+      type: object
+    Models.NemAsyncTimerVisitor:
+      type: object
+    Models.NemRequestResult:
+      type: object
+    Models.NisNodeInfo:
+      type: object
+    Models.Node:
+      type: object
+    Models.NodeCollection:
+      type: object
+    Models.TimeSynchronizationResult:
+      type: object
+    Models.TransactionMetaDataPair:
+      type: object
+    Models.UnconfirmedTransactionMetaDataPair:
+      type: object
+servers:
+  - url: http://hachi.nem.ninja:7890
+    description: Nem Nis API
+    variables: {}
